@@ -86,6 +86,14 @@ namespace CollageApp.Controllers
         {
             if(model == null) return BadRequest();
 
+            //if(model.AdmissionDate <= DateTime.Now)
+            //{
+            //    //1. Directly adding error message to modelstate
+            //    //2. Using custom attribute
+            //    ModelState.AddModelError("AdmisionDate Error", "Admision date must be grater than or equal to todyas date");
+            //    return BadRequest(ModelState);
+            //}
+
             int newId = CollageRepository.Students.LastOrDefault().Id + 1;
             Student student = new Student
             {
