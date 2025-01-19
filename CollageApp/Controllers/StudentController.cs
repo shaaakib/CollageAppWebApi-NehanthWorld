@@ -9,25 +9,55 @@ namespace CollageApp.Controllers
     public class StudentController : ControllerBase
     {
         [HttpGet]
-        public ActionResult<IEnumerable<Student>> GetStudentName()
+        public ActionResult<IEnumerable<StudentDTO>> GetStudentName()
         {
-            return Ok(CollageRepository.Students);
+            //var students = new List<StudentDTO>();
+
+            //foreach (var item in CollageRepository.Students)
+            //{
+            //    StudentDTO obj = new StudentDTO()
+            //    {
+            //        Id = item.Id,
+            //        StudentName = item.StudentName,
+            //        Address = item.Address,
+            //        Email = item.Email,
+            //    };
+            //    student.Add(obj);
+            //}
+
+            var students = CollageRepository.Students.Select(s => new StudentDTO()
+            {
+                Id = s.Id,
+                StudentName = s.StudentName,
+                Address = s.Address,
+                Email = s.Email,
+            });
+
+            return Ok(students);
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult<Student> GetStudentById(int id)
+        public ActionResult<StudentDTO> GetStudentById(int id)
         {
             if(id <= 0) return BadRequest();
 
             var student = CollageRepository.Students.Where(n => n.Id == id).FirstOrDefault();
 
-            if(student == null) return NotFound($"The student with id {id} not found");  
+            if(student == null) return NotFound($"The student with id {id} not found");
+
+            var studentDTO = new StudentDTO()
+            {
+                Id = student.Id,
+                StudentName = student.StudentName,
+                Address = student.Address,
+                Email = student.Email,
+            };
             
-            return Ok(student);
+            return Ok(studentDTO);
         }
 
         [HttpGet("{name:alpha}")]
-        public ActionResult<Student> GetStudentByName(string name)
+        public ActionResult<StudentDTO> GetStudentByName(string name)
         {
             if (string.IsNullOrEmpty(name)) return BadRequest();
 
@@ -35,7 +65,15 @@ namespace CollageApp.Controllers
 
             if (student == null) return NotFound($"The student with id {name} not found");
 
-            return Ok(student);
+            var studentDTO = new StudentDTO()
+            {
+                Id = student.Id,
+                StudentName = student.StudentName,
+                Address = student.Address,
+                Email = student.Email,
+            };
+
+            return Ok(studentDTO);
         }
 
         [HttpDelete("{id}")]
