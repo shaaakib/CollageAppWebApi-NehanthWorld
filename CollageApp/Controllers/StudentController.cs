@@ -36,7 +36,7 @@ namespace CollageApp.Controllers
             return Ok(students);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "GetStudentById")]
         public ActionResult<StudentDTO> GetStudentById(int id)
         {
             if(id <= 0) return BadRequest();
@@ -74,6 +74,32 @@ namespace CollageApp.Controllers
             };
 
             return Ok(studentDTO);
+        }
+
+        [HttpPost]
+        [Route("Create")]
+        //api/student/create
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<StudentDTO> CreateStudent([FromBody]StudentDTO model)
+        {
+            if(model == null) return BadRequest();
+
+            int newId = CollageRepository.Students.LastOrDefault().Id + 1;
+            Student student = new Student
+            {
+                Id = newId,
+                StudentName = model.StudentName,
+                Address = model.Address,
+                Email = model.Email,
+            };
+
+            CollageRepository.Students.Add(student);
+
+            model.Id = student.Id;
+
+            return CreatedAtRoute("GetStudentById", new {id = model.Id}, model);
         }
 
         [HttpDelete("{id}")]
