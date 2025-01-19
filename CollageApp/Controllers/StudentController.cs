@@ -9,29 +9,46 @@ namespace CollageApp.Controllers
     public class StudentController : ControllerBase
     {
         [HttpGet]
-        public IEnumerable<Student> GetStudentName()
+        public ActionResult<IEnumerable<Student>> GetStudentName()
         {
-            return CollageRepository.Students;
+            return Ok(CollageRepository.Students);
         }
 
         [HttpGet("{id:int}")]
-        public Student GetStudentById(int id)
+        public ActionResult<Student> GetStudentById(int id)
         {
-            return CollageRepository.Students.Where(n => n.Id == id).FirstOrDefault();
+            if(id <= 0) return BadRequest();
+
+            var student = CollageRepository.Students.Where(n => n.Id == id).FirstOrDefault();
+
+            if(student == null) return NotFound($"The student with id {id} not found");  
+            
+            return Ok(student);
         }
 
         [HttpGet("{name:alpha}")]
-        public Student GetStudentByName(string name)
+        public ActionResult<Student> GetStudentByName(string name)
         {
-            return CollageRepository.Students.Where(n => n.StudentName == name).FirstOrDefault();
+            if (string.IsNullOrEmpty(name)) return BadRequest();
+
+            var student = CollageRepository.Students.Where(n => n.StudentName == name).FirstOrDefault();
+
+            if (student == null) return NotFound($"The student with id {name} not found");
+
+            return Ok(student);
         }
 
         [HttpDelete("{id}")]
-        public bool StudentByDelete(int id)
+        public ActionResult<bool> StudentByDelete(int id)
         {
-            var student =  CollageRepository.Students.Where(n => n.Id == id).FirstOrDefault();
+            if (id <= 0) return BadRequest();
+
+            var student = CollageRepository.Students.Where(n => n.Id == id).FirstOrDefault();
+
+            if (student == null) return NotFound($"The student with id {id} not found");
+
             CollageRepository.Students.Remove(student);
-            return true;
+            return Ok(true);
         }
     }
 }
